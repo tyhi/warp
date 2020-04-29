@@ -12,7 +12,7 @@ use bytes::{Buf, Bytes};
 use futures::{future, Stream};
 use headers::ContentType;
 use mime::Mime;
-use multipart::server::Multipart;
+use multipart_async::server::Multipart;
 
 use crate::filter::{Filter, FilterBase, Internal};
 use crate::reject::{self, Rejection};

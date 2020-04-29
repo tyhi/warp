@@ -43,7 +43,6 @@ use http::header::{HeaderName, HeaderValue, CONTENT_TYPE};
 use http::StatusCode;
 use hyper::Body;
 use serde::Serialize;
-use serde_json;
 
 // This re-export just looks weird in docs...
 pub(crate) use self::sealed::Reply_;

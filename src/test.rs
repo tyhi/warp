@@ -61,6 +61,7 @@
 //!
 //! ```
 //! # use warp::Filter;
+//! use futures::task::Spawn;
 //! #[test]
 //! fn test_math() {
 //! #    let math = || warp::any().map(warp::reply);
@@ -98,7 +99,7 @@ use http::{
     Response,
 };
 use serde::Serialize;
-use serde_json;
+
 #[cfg(feature = "websocket")]
 use tokio::sync::{mpsc, oneshot};
 

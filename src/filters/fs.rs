@@ -19,7 +19,6 @@ use headers::{
 };
 use http::StatusCode;
 use hyper::Body;
-use mime_guess;
 use tokio::fs::File as TkFile;
 use tokio::io::AsyncRead;
 use urlencoding::decode;
@@ -312,7 +311,7 @@ fn file_conditional(
 
                         resp
                     })
-                    .unwrap_or_else(|BadRange| {
+                    .unwrap_or_else(|_bad_range| {
                         // bad byte range
                         let mut resp = Response::new(Body::empty());
                         *resp.status_mut() = StatusCode::RANGE_NOT_SATISFIABLE;

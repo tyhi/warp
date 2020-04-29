@@ -12,10 +12,8 @@ use futures::{future, ready, Stream, TryFutureExt};
 use headers::ContentLength;
 use http::header::CONTENT_TYPE;
 use hyper::Body;
-use mime;
+
 use serde::de::DeserializeOwned;
-use serde_json;
-use serde_urlencoded;
 
 use crate::filter::{filter_fn, filter_fn_one, Filter, FilterBase};
 use crate::reject::{self, Rejection};

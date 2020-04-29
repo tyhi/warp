@@ -311,9 +311,9 @@ pub struct CorsForbidden {
 
 #[derive(Debug)]
 enum Forbidden {
-    OriginNotAllowed,
-    MethodNotAllowed,
-    HeaderNotAllowed,
+    Origin,
+    Method,
+    HeaderNot,
 }
 
 impl ::std::fmt::Debug for CorsForbidden {
@@ -325,9 +325,9 @@ impl ::std::fmt::Debug for CorsForbidden {
 impl ::std::fmt::Display for CorsForbidden {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         let detail = match self.kind {
-            Forbidden::OriginNotAllowed => "origin not allowed",
-            Forbidden::MethodNotAllowed => "request-method not allowed",
-            Forbidden::HeaderNotAllowed => "header not allowed",
+            Forbidden::Origin => "origin not allowed",
+            Forbidden::Method => "request-method not allowed",
+            Forbidden::HeaderNot => "header not allowed",
         };
         write!(f, "CORS request forbidden: {}", detail)
     }
@@ -360,25 +360,23 @@ impl Configured {
                 // OPTIONS requests are preflight CORS requests...
 
                 if !self.is_origin_allowed(origin) {
-                    return Err(Forbidden::OriginNotAllowed);
+                    return Err(Forbidden::Origin);
                 }
 
                 if let Some(req_method) = headers.get(header::ACCESS_CONTROL_REQUEST_METHOD) {
                     if !self.is_method_allowed(req_method) {
-                        return Err(Forbidden::MethodNotAllowed);
+                        return Err(Forbidden::Method);
                     }
                 } else {
                     log::trace!("preflight request missing access-control-request-method header");
-                    return Err(Forbidden::MethodNotAllowed);
+                    return Err(Forbidden::Method);
                 }
 
                 if let Some(req_headers) = headers.get(header::ACCESS_CONTROL_REQUEST_HEADERS) {
-                    let headers = req_headers
-                        .to_str()
-                        .map_err(|_| Forbidden::HeaderNotAllowed)?;
+                    let headers = req_headers.to_str().map_err(|_| Forbidden::HeaderNot)?;
                     for header in headers.split(',') {
                         if !self.is_header_allowed(header) {
-                            return Err(Forbidden::HeaderNotAllowed);
+                            return Err(Forbidden::HeaderNot);
                         }
                     }
                 }
@@ -392,7 +390,7 @@ impl Configured {
                 if self.is_origin_allowed(origin) {
                     Ok(Validated::Simple(origin.clone()))
                 } else {
-                    Err(Forbidden::OriginNotAllowed)
+                    Err(Forbidden::Origin)
                 }
             }
             (None, _) => {
@@ -410,7 +408,7 @@ impl Configured {
 
     fn is_header_allowed(&self, header: &str) -> bool {
         HeaderName::from_bytes(header.as_bytes())
-            .map(|header| self.cors.allowed_headers.contains(&header))
+            .map(|header| self.cors.allowed_headers.contains(header.as_str()))
             .unwrap_or(false)
     }
 
